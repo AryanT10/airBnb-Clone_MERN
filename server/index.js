@@ -52,7 +52,7 @@ app.post('/login', async (req, res) => {
 				if (err) throw err;
 				res.cookie('token', token).json('pass ok');
 			})
-			res.cookie('token', '').json('pass ok');
+			res.cookie('token', '').json(userDocument);
 		}
 		else {
 			res.status(422).json('pass not ok');
