@@ -3,8 +3,11 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('./models/User');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const bcryptSalt =  bcrypt.genSaltSync(10);
+
+const bcryptSalt = bcrypt.genSaltSync(10);
+const jwtSecret = 'anythingWecanGuessOfLikeImeanAnything'
 
 const app = express();
 
@@ -29,7 +32,7 @@ app.post('/register', async (req, res) => {
 		const userDocument = await User.create({
 			name,
 			email,
-			password:bcrypt.hashSync(password, bcryptSalt),
+			password: bcrypt.hashSync(password, bcryptSalt),
 		});
 		res.json(userDocument);
 	}
@@ -37,5 +40,27 @@ app.post('/register', async (req, res) => {
 		res.status(422).json(e);
 	}
 
-})
+});
+
+app.post('/login', async (req, res) => {
+	const { email, password } = req.body;
+	const userDocument = await User.findOne({ email });
+	if (userDocument) {
+		const passOk = bcrypt.compareSync(password, userDocument.password);
+		if (passOk) {
+			jwt.sign({ email: userDocument.email, id: userDocument._id }, jwtSecret, {}, (err, token) => {
+				if (err) throw err;
+				res.cookie('token', token).json('pass ok');
+			})
+			res.cookie('token', '').json('pass ok');
+		}
+		else {
+			res.status(422).json('pass not ok');
+		}
+	}
+	else {
+		res.json('not found');
+	}
+});
+
 app.listen(4000);
