@@ -73,9 +73,9 @@ export default function PlacesPage() {
 							<button onClick={addPhoto} className="bg-gray-200 px-4 rounded-2xl">Add&nbsp;Photo</button>
 						</div>
 						<div className="mt-2 grid grid-cols-3 md:lg-grid-cols-4 lg:grid-cols-6 ">
-							{addedPhotos.length > 0 && addedPhotos.map((link,index) => (
-								<div key={index}>
-									{link}
+							{addedPhotos.length > 0 && addedPhotos.map((link) => (
+								<div>
+									<img src={'http://localhost:4000/uploads/' + link } alt=""/>
 								</div>
 							))}
 							<button className=" flex justify-center gap-1 border bg-transparent rounded-2xl p-8 text-2xl text-gray-600">
