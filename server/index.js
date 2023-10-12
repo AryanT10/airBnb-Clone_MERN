@@ -6,7 +6,9 @@ const User = require('./models/User');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const imageDownloader = require('image-downloader');
+const multer = require('multer');
 require('dotenv').config();
+const fs= require('fs')
 
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = 'anythingWecanGuessOfLikeImeanAnything'
@@ -85,10 +87,9 @@ app.get('/profile', (req, res) => {
 })
 
 app.post('/logout', (req, res) => {
-	res.cookie('token', '').json(true);
+	res.cookie('token', '').json(true);  
 });
 
-console.log({ __dirname });
 app.post('/upload-by-link', async (req, res) => {
 	const { link } = req.body;
 	const newName = 'photo' + Date.now() + '.jpg';
@@ -99,5 +100,43 @@ app.post('/upload-by-link', async (req, res) => {
 	});
 	res.json(newName);
 });
+
+// const photosMiddleware = multer({ dest: 'uploads/' });
+// app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
+// 	const uploadedFiles = []
+// 	for (let i = 0; i < req.files.length; i++){
+// 		const { path,originalName } = req.files[i];
+// 		const parts = originalName.split('.');
+// 		const ext = parts[parts.length - 1];
+// 		const newPath = path + '.' + ext;
+// 		fs.renameSync(path, newPath);
+// 		uploadedFiles.push(newPath.replace('uploads/',''));
+// 	}
+// 	res.json(uploadedFiles);
+// })
+
+const photosMiddleware = multer({ dest: 'uploads/' });
+app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
+	const uploadedFiles = [];
+	for (let i = 0; i < req.files.length; i++) {
+		console.log(req.files[i])
+		const { path, originalname } = req.files[i];
+		if (originalname) {
+			const parts = originalname.split('.');
+			if (parts.length > 1) {
+				const ext = parts[parts.length - 1];
+				const newPath = path + '.' + ext;
+				fs.renameSync(path, newPath);
+				uploadedFiles.push(newPath);
+			} else {
+				// Handle the case where the file doesn't have an extension
+				uploadedFiles.push(path);
+			}
+		}
+	}
+	console.log(uploadedFiles)
+	res.json(uploadedFiles);
+});
+
 
 app.listen(4000);
