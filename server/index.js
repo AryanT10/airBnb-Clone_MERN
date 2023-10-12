@@ -127,10 +127,9 @@ app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
 				const ext = parts[parts.length - 1];
 				const newPath = path + '.' + ext;
 				fs.renameSync(path, newPath);
-				uploadedFiles.push(newPath);
+				uploadedFiles.push(newPath.replace('uploads/',""));
 			} else {
-				// Handle the case where the file doesn't have an extension
-				uploadedFiles.push(path);
+				uploadedFiles.push(path.replace("uploads/",""));
 			}
 		}
 	}
