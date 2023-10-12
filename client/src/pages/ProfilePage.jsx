@@ -6,7 +6,7 @@ import PlacesPage from './PlacesPage';
 import AccountNav from '../AccountNav';
 
 
-export default function AccountPage() {
+export default function ProfilePage() {
 	const [redirect, setRedirect] = useState(null);
 	const { ready, user, setUser } = useContext(UserContext);
 
@@ -28,9 +28,6 @@ export default function AccountPage() {
 	if (ready && !user && !redirect) {
 		return <Navigate to={'/login'} />
 	}
-
-
-
 
 	if (redirect) {
 		return <Navigate to={redirect} />
